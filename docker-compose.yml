@@ -1,0 +1,33 @@
+services:
+  foodfinder:
+    image: ${DOCKER_REGISTRY-}foodfinder
+    container_name: foodfinder-api
+    build:
+      context: .
+      dockerfile: FoodFinder/Dockerfile
+    networks:
+      - storage
+      - proxy
+
+
+  redis:
+    image: redis:7.0.1-bullseye
+    container_name: redis
+    restart: always
+    hostname: redis
+    ports:
+      - '127.0.0.1:6379:6379/tcp'    
+    volumes:
+      - cachebackup:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    mem_limit: 6g
+    networks:
+      - storage
+
+volumes:
+  cachebackup:
+    driver: local
+
+networks:
+  storage: {}
+  proxy: {}
